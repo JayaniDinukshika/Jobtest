@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home, color: Colors.brown),
+            leading: const Icon(Icons.home, color: Colors.amber),
             title: const Text('Home'),
             onTap: () {
               Navigator.pop(context); // Close drawer

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:job/screens/checkout_screen.dart';
+import 'package:job/screens/success_screen.dart';
 import 'package:provider/provider.dart'; // Add provider import
 import 'package:job/providers/cart_provider.dart'; // Import CartProvider
 import 'package:job/screens/cart_screen.dart'; // Ensure correct case (CartScreen)
@@ -38,7 +39,8 @@ class MyApp extends StatelessWidget {
           '/splash': (context) => SplashScreen(),
           '/home': (context) => const HomeScreen(),
           '/cart': (context) => const CartScreen(),
-          '/checkout': (context) => const CheckoutScreen(), // Replace with CheckoutScreen
+          '/checkout': (context) => const CheckoutScreen(),
+          '/success': (context) => const SuccessScreen(),// Replace with CheckoutScreen
         },
       ),
     );

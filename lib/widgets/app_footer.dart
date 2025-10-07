@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
-
-import '../screens/Cart_screen.dart';
+import '../screens/cart_screen.dart';
 import '../screens/home_screen.dart';
 
 class AppFooter extends StatelessWidget {
@@ -46,7 +44,10 @@ class AppFooter extends StatelessWidget {
               );
               break;
             case 1:
-              Navigator.pushReplacementNamed(context, '/products');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const CartScreen()),
+              );
               break;
             case 2:
               Navigator.pushReplacement(
@@ -54,12 +55,12 @@ class AppFooter extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const CartScreen()),
               );
               break;
-            // case 3:
-            //   Navigator.pushReplacement(
-            //     context,
-            //     MaterialPageRoute(builder: (context) => const ProfileScreen()),
-            //   );
-            //   break;
+          // case 3:
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          //   );
+          //   break;
           }
         },
         items: const [
@@ -68,16 +69,16 @@ class AppFooter extends StatelessWidget {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view),
-            label: 'products',
+            icon: Icon(Icons.shopping_cart),
+            label: 'Cart',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'cart',
+            icon: Icon(Icons.grid_view),
+            label: 'Cart',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'profile',
+            label: 'Profile',
           ),
         ],
       ),

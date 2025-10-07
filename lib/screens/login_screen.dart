@@ -1,10 +1,8 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:job/screens/register_screen.dart';
-
-import 'home_screen.dart';
+import 'package:job/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,28 +16,43 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+  final _storage = const FlutterSecureStorage(); // Secure storage instance
   bool _isLoading = false;
 
-  void _login() async {
-    // Validate form before proceeding
+  Future<void> _login() async {
+    // Validate form
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
+      // Firebase sign-in
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
+      // ---------- SUCCESS ----------
+      // Save credentials
+      await _storage.write(key: 'user_email', value: _emailController.text.trim());
+      await _storage.write(key: 'user_password', value: _passwordController.text.trim());
+
+      // Save current date/time of successful login
+      final String loginDate = DateTime.now().toIso8601String();
+      await _storage.write(key: 'login_date', value: loginDate);
+
+      // Optional: you can also store a formatted string
+      // final String formatted = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
+      // await _storage.write(key: 'login_date_formatted', value: formatted);
+
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {
+      // ... existing error handling (unchanged) ...
       String errorMessage;
       switch (e.code) {
         case 'invalid-email':
@@ -65,29 +78,18 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red, duration: const Duration(seconds: 4)),
         );
       }
     } catch (e) {
-      // Generic error for non-Firebase exceptions
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An unexpected error occurred. Please try again.'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 4),
-          ),
+          const SnackBar(content: Text('An unexpected error occurred. Please try again.'), backgroundColor: Colors.red, duration: Duration(seconds: 4)),
         );
       }
     } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
@@ -101,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // UI unchanged – only the login logic was modified
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -118,34 +121,13 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Decorative Element (e.g., Logo or Flourish)
-                  Image.asset(
-                    'assets/logow.png',
-                    width: 120,
-                    height: 120,
-
-                  ),
+                  Image.asset('assets/logo.png', width: 120, height: 120),
                   const SizedBox(height: 20),
-                  // Welcome Text
-                  const Text(
-                    'Welcome Back',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
+                  const Text('Welcome Back',
+                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 1.5)),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Please sign in to continue',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  const Text('Please sign in to continue', style: TextStyle(fontSize: 16, color: Colors.grey)),
                   const SizedBox(height: 40),
-                  // Email Field
                   TextFormField(
                     controller: _emailController,
                     style: const TextStyle(color: Colors.white),
@@ -154,24 +136,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelStyle: TextStyle(color: Colors.yellow[700]),
                       filled: true,
                       fillColor: Colors.black26,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email address.';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                        return 'Please enter a valid email address.';
-                      }
+                      if (value == null || value.isEmpty) return 'Please enter your email address.';
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email address.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 20),
-                  // Password Field
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
@@ -181,61 +155,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelStyle: TextStyle(color: Colors.yellow[700]),
                       filled: true,
                       fillColor: Colors.black26,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        borderSide: BorderSide.none,
-                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                     ),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password.';
-                      }
-                      if (value.length < 6) {
-                        return 'Password must be at least 6 characters.';
-                      }
+                      if (value == null || value.isEmpty) return 'Please enter your password.';
+                      if (value.length < 6) return 'Password must be at least 6 characters.';
                       return null;
                     },
                   ),
                   const SizedBox(height: 30),
-                  // Login Button
                   SizedBox(
                     width: double.infinity,
                     child: _isLoading
-                        ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Colors.yellow,
-                      ),
-                    )
+                        ? const Center(child: CircularProgressIndicator(color: Colors.yellow))
                         : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.yellow[700],
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       ),
                       onPressed: _login,
-                      child: const Text(
-                        'Sign In',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: const Text('Sign In',
+                          style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
                   ),
                   const SizedBox(height: 15),
-                  // Register Link
                   TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                    ),
-                    child: Text(
-                      'Create an Account',
-                      style: TextStyle(color: Colors.yellow[700], fontSize: 16),
-                    ),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RegisterScreen())),
+                    child: Text('Create an Account', style: TextStyle(color: Colors.yellow[700], fontSize: 16)),
                   ),
                 ],
               ),

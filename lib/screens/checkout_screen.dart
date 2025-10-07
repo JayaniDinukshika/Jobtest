@@ -211,7 +211,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         ),
                       );
                       // Navigate back to home
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushReplacementNamed(context, '/success');
                     }
                   },
                   style: ElevatedButton.styleFrom(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "825374792631",
+    "project_id": "jobinterview-f9d01",
+    "storage_bucket": "jobinterview-f9d01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:825374792631:android:6fe733256dd43fde5be632",
+        "android_client_info": {
+          "package_name": "com.example.job"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMomfiPZbN1nDgw-oT9uG46RVNSq90d5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

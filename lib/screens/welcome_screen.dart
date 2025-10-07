@@ -56,7 +56,7 @@ class WelcomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Delicate, pretty flowers full of love and charm',
+                      'Selling only the best things online',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         color: Colors.grey[400],

@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // For navigation to login
-import 'home_screen.dart'; // For navigation after successful registration
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:job/screens/login_screen.dart';
+import 'package:job/screens/home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -17,6 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _auth = FirebaseAuth.instance;
+  final _storage = const FlutterSecureStorage(); // Initialize secure storage
   bool _isLoading = false;
 
   void _register() async {
@@ -27,16 +29,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
+      // Create user with Firebase
       await _auth.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
       // Set username as display name
       await _auth.currentUser?.updateDisplayName(_usernameController.text.trim());
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+
+      // Save credentials and registration date to secure storage
+      await _storage.write(
+        key: 'user_email',
+        value: _emailController.text.trim(),
       );
+      await _storage.write(
+        key: 'user_password',
+        value: _passwordController.text.trim(),
+      );
+      await _storage.write(
+        key: 'login_date',
+        value: DateTime.now().toIso8601String(),
+      );
+
+      // Navigate to LoginScreen after successful registration
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     } on FirebaseAuthException catch (e) {
       String errorMessage;
       switch (e.code) {
@@ -52,13 +74,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
         default:
           errorMessage = 'An error occurred: ${e.message}';
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle unexpected errors
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('An unexpected error occurred. Please try again.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -95,7 +136,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     'assets/logow.png',
                     width: 120,
                     height: 120,
-
                   ),
                   const SizedBox(height: 20),
                   // Welcome Text

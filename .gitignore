@@ -14,7 +14,10 @@ migrate_working_dir/
 
 # Firebase secrets
 your-firebase-key.json
-*.json (if it's a general Firebase key, but be careful with other JSON files)
+# Add other specific Firebase keys if needed, e.g.:
+# firebase-admin-key.json
+# *.p12
+# *.pem
 
 # IntelliJ related
 *.iml
@@ -47,3 +50,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Firebase client configs (less sensitive, but still avoid committing if possible)
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist

@@ -253,6 +253,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () {
+                        Navigator.pushNamed(context, '/checkout');
                         // Implement checkout functionality here
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

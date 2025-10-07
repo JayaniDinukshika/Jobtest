@@ -12,6 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 
+# Firebase secrets
+your-firebase-key.json
+*.json (if it's a general Firebase key, but be careful with other JSON files)
+
 # IntelliJ related
 *.iml
 *.ipr

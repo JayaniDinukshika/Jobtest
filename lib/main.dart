@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:job/screens/checkout_screen.dart';
 import 'package:provider/provider.dart'; // Add provider import
 import 'package:job/providers/cart_provider.dart'; // Import CartProvider
@@ -13,8 +14,10 @@ import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Stripe.publishableKey = "pk_test_51SFVVkFMGZaOfBRBlQMy9hFqSCZhAJN5Mmg7Ax4YauIjqhbHt3jhocy0OTC0AfMlw6ub2hrdqktcgFsEvknhaPAU00h40fAOlC";
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+
   );
   runApp(const MyApp());
 }
